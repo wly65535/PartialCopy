@@ -20,7 +20,7 @@ func main() {
 	flag.StringVar(&outputFileName, "output", "", "output filename. (position parameter is also ok)")
 	flag.Int64Var(&inputFileSkip, "skip", 0, "seek bytes of input file. (negative number is supported)")
 	flag.Int64Var(&outputFileSeek, "seek", 0, "seek bytes of output file. (negative number is supported)")
-	flag.Int64Var(&outputFileCount, "count", 0, "copy max count bytes.")
+	flag.Int64Var(&outputFileCount, "count", 0, "copy max count bytes. (negative number is supported)")
 	flag.BoolVar(&outputFileAppend, "append", false, "append if file exists")
 	flag.Usage = func() {
 		fmt.Printf("Usage of %s:\n", os.Args[0])
@@ -126,6 +126,15 @@ func main() {
 			fmt.Println("outputFile.Seek", err)
 			return	
 		}
+	}
+
+	if outputFileCount < 0 {
+		inputFileInfo, err := inputFile.Stat()
+		if err != nil {
+			fmt.Println("outputFile.Seek", err)
+			return	
+		}
+		outputFileCount += inputFileInfo.Size()
 	}
 
 	if outputFileCount == 0 {
